@@ -1,7 +1,7 @@
 package com.example.myapplication.Book;
 
 
-import com.example.myapplication.Book.Dto.Book;
+import com.example.myapplication.Book.Entity.UsedBook;
 import com.example.myapplication.R;
 
 import android.view.LayoutInflater;
@@ -14,12 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> implements OnPersonItemClickListener
 {
 
-    ArrayList<Book> items = new ArrayList<Book>();
+    ArrayList<UsedBook> items = new ArrayList<UsedBook>();
     OnPersonItemClickListener listener;
 
     @NonNull
@@ -33,7 +32,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> im
 
     @Override
     public void onBindViewHolder(@NonNull BookAdapter.ViewHolder holder, int position) {
-        Book item = items.get(position);
+        UsedBook item = items.get(position);
         //holder.setItem(item);
     }
 
@@ -51,19 +50,19 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> im
         if(listener != null)
         { listener.onItemClick(holder,view,position); }
     }
-    public void addItem(Book item) {
+    public void addItem(UsedBook item) {
         items.add(item);
     }
 
-    public void setItems(ArrayList<Book> items) {
+    public void setItems(ArrayList<UsedBook> items) {
         this.items = items;
     }
 
-    public Book getItem(int position) {
+    public UsedBook getItem(int position) {
         return items.get(position);
     }
 
-    public void setItem(int position, Book item) {
+    public void setItem(int position, UsedBook item) {
         items.set(position, item);
     }
 
@@ -95,11 +94,11 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.ViewHolder> im
         }
 
 
-        public void setItem(Book item) {
-            book_name.setText(item.getUsedBookCreateDto().getBook().getName());
-            book_made.setText(item.getPublisherCreateDto().getName());
-            book_money.setText(item.getUsedBookCreateDto().getBook().getCost().toString());
-            book_time.setText(item.getUsedBookCreateDto().getBook().getPublishedDate().toString());
+        public void setItem(UsedBook item) {
+            book_name.setText(item.getBook().getName());
+            book_made.setText(item.getPublisher().getName());
+            book_money.setText(item.getBook().getCost().toString());
+            book_time.setText(item.getBook().getPublishedDate().toString());
         }
     }
 }

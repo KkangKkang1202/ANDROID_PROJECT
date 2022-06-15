@@ -11,26 +11,23 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class UserInfoCreateDto {
-    UserCreateDto userCreateDto;
+    UserCreateDto user;
     String nickname;
-    String name;
     String college;
-    String majorCollege;
-    String major;
     String region;
 
     public UserInfoCreateDto()
     {
-        this.userCreateDto = new UserCreateDto();
+        this.user = new UserCreateDto();
     }
 
 
-    public UserCreateDto getUserCreateDto() {
-        return userCreateDto;
+    public UserCreateDto getUser() {
+        return user;
     }
 
-    public void setUserCreateDto(UserCreateDto userCreateDto) {
-        this.userCreateDto = userCreateDto;
+    public void setUser(UserCreateDto userCreateDto) {
+        this.user = userCreateDto;
     }
 
     public String getNickname() {
@@ -41,36 +38,12 @@ public class UserInfoCreateDto {
         this.nickname = nickname;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getCollege() {
         return college;
     }
 
     public void setCollege(String college) {
         this.college = college;
-    }
-
-    public String getMajorCollege() {
-        return majorCollege;
-    }
-
-    public void setMajorCollege(String majorCollege) {
-        this.majorCollege = majorCollege;
-    }
-
-    public String getMajor() {
-        return major;
-    }
-
-    public void setMajor(String major) {
-        this.major = major;
     }
 
     public String getRegion() {

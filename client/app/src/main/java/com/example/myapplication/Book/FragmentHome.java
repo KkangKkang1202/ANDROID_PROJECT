@@ -1,5 +1,8 @@
 package com.example.myapplication.Book;
 
+import static com.example.myapplication.BarActivity.queue;
+import static com.navercorp.volleyextensions.volleyer.Volleyer.volleyer;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,11 +16,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.Book.Dto.Book;
-import com.example.myapplication.Book.Dto.BookListElementDto;
+import com.android.volley.Response;
+import com.example.myapplication.Book.Entity.UsedBook;
 import com.example.myapplication.R;
+import com.example.myapplication.utils.Properties;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FragmentHome extends Fragment
@@ -42,7 +46,10 @@ public class FragmentHome extends Fragment
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         bookAdapter = new BookAdapter();
+        ObjectMapper objectMapper = new ObjectMapper();
 
+        volleyer(queue).settings().setAsDefault().done();
+        queue.start();
      /*   bookAdapter.addItem(new BookListElementDto("역사와 비판적 사고", "한빛 아카데미","20,000원","2022.03.23"));
         bookAdapter.addItem(new BookListElementDto("컴퓨터 구조", "생능 출판사","15,000원","2022.03.23"));
         bookAdapter.addItem(new BookListElementDto("역사와 비판적 사고", "한빛 아카데미","20,000원","2022.03.23"));
@@ -52,12 +59,19 @@ public class FragmentHome extends Fragment
         bookAdapter.addItem(new BookListElementDto("역사와 비판적 사고", "한빛 아카데미","20,000원","2022.03.23"));
         bookAdapter.addItem(new BookListElementDto("역사와 비판적 사고", "한빛 아카데미","20,000원","2022.03.23"));
         bookAdapter.addItem(new BookListElementDto("역사와 비판적 사고", "한빛 아카데미","20,000원","2022.03.23"));*/
+        BookAdapter bookAdapter = new BookAdapter();
+        volleyer().get(Properties.serverUrl+"/used").withTargetClass(List.class).withListener(
+                new Response.Listener<List>() {
+                    @Override
+                    public void onResponse(List response) {
+                        List response1 = response;
+                        for (com.example.myapplication.Book.Entity.UsedBook usedBook : (List<UsedBook>) response1) {
+                            bookAdapter.addItem(usedBook);
+                        }
 
-        List<Book> books = new ArrayList<>();
-        for(Book book : books)
-        {
-            this.bookAdapter.addItem(book);
-        }
+                    }
+                }
+        ).execute();
 
         recyclerView.setAdapter(bookAdapter);
 
@@ -66,7 +80,7 @@ public class FragmentHome extends Fragment
             @Override
             public void onItemClick(BookAdapter.ViewHolder holder, View view, int position)
             {
-                Book item = bookAdapter.getItem(position);
+                UsedBook item = bookAdapter.getItem(position);
                 //Book bookDetailDto = new Book(item.getName(), item.getPublisher(), item.getCost(), item.getPublishedDate());
                 Intent intent = new Intent(getActivity(), PostActivity.class);
                 PostActivity.setData(item);

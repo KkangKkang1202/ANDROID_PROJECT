@@ -20,6 +20,7 @@ import com.example.myapplication.Chat.retrofit.Result;
 import com.example.myapplication.Chat.retrofit.RetrofitClient;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.ActivityChatBinding;
+import com.example.myapplication.utils.Properties;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -61,7 +62,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void init() {
         try {
-            mSocket = IO.socket("http://10.0.2.2:80");
+            mSocket = IO.socket(Properties.socketUrl);
             Log.d("SOCKET", "Connection success : " + mSocket.id());
         } catch (URISyntaxException e) {
             e.printStackTrace();

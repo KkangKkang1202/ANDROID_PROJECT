@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.Book.Dto.Book;
+import com.example.myapplication.Book.Entity.UsedBook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +27,8 @@ public class SelllistActivity extends AppCompatActivity {
         adapter = new SellAdapter();
 
 
-        List<Book> books = new ArrayList<>();
-        for(Book book : books)
+        List<UsedBook> books = new ArrayList<>();
+        for(UsedBook book : books)
         {
             this.adapter.addItem(book);
         }

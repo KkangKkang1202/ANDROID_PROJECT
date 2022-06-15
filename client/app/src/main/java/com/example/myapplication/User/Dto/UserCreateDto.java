@@ -17,7 +17,7 @@ import lombok.Setter;
 public class UserCreateDto {
 
     String phone; // 전화번호
-    List<Role> roles;
+
 
     public String getPhone() {
         return phone;
@@ -25,13 +25,5 @@ public class UserCreateDto {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
     }
 }

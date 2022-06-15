@@ -1,4 +1,6 @@
-package com.example.myapplication;
+package com.example.myapplication.User;
+
+import static com.navercorp.volleyextensions.volleyer.Volleyer.volleyer;
 
 import android.Manifest;
 import android.app.Activity;
@@ -13,7 +15,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -23,10 +25,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.example.myapplication.BarActivity;
+import com.example.myapplication.Book.FragmentHome;
+import com.example.myapplication.GpsTracker;
+import com.example.myapplication.R;
+import com.example.myapplication.User.Dto.TokenDto;
 import com.example.myapplication.User.Dto.UserCreateDto;
 import com.example.myapplication.User.Dto.UserInfoCreateDto;
-import com.example.myapplication.User.LoginActivity;
-import com.example.myapplication.User.SignActivity;
+import com.example.myapplication.utils.Properties;
+import com.example.myapplication.utils.ResponseDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.navercorp.volleyextensions.volleyer.factory.DefaultRequestQueueFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,17 +51,26 @@ public class GpsActivity extends Activity {
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
     Button nextButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gps);
+        ObjectMapper objectMapper = new ObjectMapper();
+        RequestQueue queue;
+        queue = DefaultRequestQueueFactory.create(this);
+        volleyer(queue).settings().setAsDefault().done();
 
+        queue.start();
+        Button ShowLocationButton = (Button) findViewById(R.id.button);
         Spinner yearSpinner = (Spinner)findViewById(R.id.juso);
         ArrayAdapter yearAdapter = ArrayAdapter.createFromResource(this, R.array.juso,android.R.layout.simple_spinner_item);
         yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         yearSpinner.setAdapter(yearAdapter);
 
+        final TextView textview_address = (TextView)findViewById(R.id.textview);
         nextButton = (Button) findViewById(R.id.nextbutton);
         nextButton.setOnClickListener(new View.OnClickListener() {
 
@@ -56,12 +78,45 @@ public class GpsActivity extends Activity {
             @Override
             public void onClick(View view) {
                 UserInfoCreateDto userInfoCreateDto=new UserInfoCreateDto();
-                System.out.println(userInfoCreateDto.getUserCreateDto());
-                userInfoCreateDto.getUserCreateDto().setPhone(SignActivity.phone);
+                System.out.println(userInfoCreateDto.getUser());
+                UserCreateDto userCreateDto = new UserCreateDto(SignActivity.phone);
+                userInfoCreateDto.setUser(userCreateDto);
                 userInfoCreateDto.setCollege(LoginActivity.college);
-                userInfoCreateDto.setCollege(LoginActivity.nickname);
-                Intent intent = new Intent(getApplicationContext(), BarActivity.class);
-                startActivity(intent);
+                userInfoCreateDto.setNickname(LoginActivity.nickname);
+                userInfoCreateDto.setRegion(textview_address.getText().toString());
+                try {
+                    volleyer().post(Properties.serverUrl+"/auth/join")
+                            .addHeader("Content-Type", "application/json")
+                            .withBody(objectMapper.writeValueAsString(userInfoCreateDto))
+                            .withTargetClass(ResponseDto.class)
+                            .withListener(
+                                    new Response.Listener<ResponseDto>() {
+                                        @Override
+                                        public void onResponse(ResponseDto response) {
+                                            if(response.getSuccess()){
+                                                TokenDto data = (TokenDto) response.getData();
+                                                if(data != null){
+                                                    Properties.token = data.getAccessToken();
+                                                    startActivity(new Intent(getApplicationContext(), BarActivity.class));
+                                                }
+
+
+                                            }
+                                        }
+                                    }
+                            )
+                            .withErrorListener(
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            System.out.println(error);
+                                        }
+                                    }
+                            ).execute();
+
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -74,10 +129,10 @@ public class GpsActivity extends Activity {
             checkRunTimePermission();
         }
 
-        final TextView textview_address = (TextView)findViewById(R.id.textview);
 
 
-        Button ShowLocationButton = (Button) findViewById(R.id.button);
+
+
         ShowLocationButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
